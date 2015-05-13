@@ -1,0 +1,18 @@
+{
+  "name": "npm-lifecycle-runner",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint-myrules lint ."
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cellule-eslint-myrules": "^2.0.0"
+  },
+  "dependencies": {
+    "lodash.some": "^3.2.1"
+  }
+}
