@@ -1,6 +1,8 @@
+var exec = require("child_process").exec;
+var path = require("path");
+
 var isProd = process.env.NODE_ENV === "production";
 var lifecycleEvent = process.env.npm_lifecycle_event;
-var exec = require("child_process").exec;
 
 /*
 var supportedLifeCycles = [
@@ -20,8 +22,7 @@ var lifeCycles = [
     if(
       !isProd &&
       lifecycleEvent === "install" &&
-      // installed from this module
-      projectRoot === process.cwd()
+      path.dirname(projectRoot) !== "node_modules"
     ) {
       return "devInstall";
     }
@@ -32,7 +33,7 @@ var lifeCycles = [
       (
         isProd ||
         // installed from another module
-        projectRoot !== process.cwd()
+        path.dirname(projectRoot) === "node_modules"
       )
     ) {
       return "prodInstall";
