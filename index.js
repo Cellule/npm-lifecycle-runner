@@ -1,6 +1,5 @@
-var isProd = process.env.NODE_ENV !== "production";
+var isProd = process.env.NODE_ENV === "production";
 var lifecycleEvent = process.env.npm_lifecycle_event;
-var any = require("lodash.some");
 var exec = require("child_process").exec;
 
 /*
@@ -46,7 +45,6 @@ var lifeCycles = [
   }
 ];
 
-  // doDevInstall: !isProd && lifecycleEvent === "install"
 function report(msg) {
   console.warn("npm-lifecycle-runner: " + msg);
 }
@@ -65,6 +63,7 @@ function execCmd(cmdDetails, done) {
     return done();
   }
 
+  // console.log("> " + cmd);
   exec(cmd, opts, function (err, stdout, stderror) {
     if(err) {
       if(cmdDetails.onError) {
@@ -83,7 +82,6 @@ function execCmd(cmdDetails, done) {
       }
       return done();
     }
-    console.log("Success");
     console.log(stdout);
     return done();
   });
@@ -100,9 +98,10 @@ module.exports = function(projectRoot, cmds) {
     cmds = [cmds];
   }
 
-  var type = any(lifeCycles, function(lifecycle) {
-    return lifecycle(projectRoot);
-  });
+  var type;
+  for(var i = 0; i < lifeCycles.length && !type; i++) {
+    type = lifeCycles[i](projectRoot);
+  }
 
   if(!type) {
     return report("Unsupported lifecycle event");
@@ -124,14 +123,14 @@ module.exports = function(projectRoot, cmds) {
     return function() {
       process.nextTick(function() {
         if(type === cmdDetails.type) {
-          execCmd(cmdDetails, next);
+          return execCmd(cmdDetails, next);
         }
         next();
       });
     };
   }
 
-  var nextCallback = function(){};
+  var nextCallback = function() { };
   for(var i = cmds.length - 1; i >= 0; i--) {
     var cmd = cmds[i];
     cmd.run = run(cmd, nextCallback);
