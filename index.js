@@ -5,19 +5,8 @@ var isProd = process.env.NODE_ENV === "production";
 var lifecycleEvent = process.env.npm_lifecycle_event;
 __RUNNER_DEBUG__ = false;
 
-/*
-var supportedLifeCycles = [
-  // only when installing in its own folder `npm install`
-  "devInstall",
-  // when installing for production or from another module
-  "prodInstall",
-  // on every install lifecycle event
-  "install",
-];
-*/
 var defaultLifeCycle = "devInstall";
 
-// TODO:: add support for other lifecycles
 var lifeCycles = [
   function isDevInstall(projectRoot) {
     if(
@@ -40,10 +29,8 @@ var lifeCycles = [
       return "prodInstall";
     }
   },
-  function isInstall() {
-    if(lifecycleEvent === "install") {
-      return "install";
-    }
+  function otherLifecycles() {
+    return lifecycleEvent;
   }
 ];
 

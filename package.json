@@ -1,15 +1,23 @@
 {
   "name": "npm-lifecycle-runner",
-  "version": "0.0.5",
-  "description": "",
+  "version": "0.0.6",
+  "description": "Execute npm lifecycle scripts under better conditions",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Cellule/npm-lifecycle-runner"
+  },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint-myrules lint .",
     "install": "node installScript.js"
   },
-  "author": "",
-  "license": "ISC",
+  "author": {
+    "name": "Michael Ferris",
+    "url": "https://github.com/Cellule",
+    "email": "mike.ferris@hotmail.com"
+  },
+  "license": "MIT",
   "devDependencies": {
     "cellule-eslint-myrules": "^2.0.0"
   },
