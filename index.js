@@ -3,6 +3,7 @@ var path = require("path");
 
 var isProd = process.env.NODE_ENV === "production";
 var lifecycleEvent = process.env.npm_lifecycle_event;
+__RUNNER_DEBUG__ = false;
 
 /*
 var supportedLifeCycles = [
@@ -22,7 +23,7 @@ var lifeCycles = [
     if(
       !isProd &&
       lifecycleEvent === "install" &&
-      path.dirname(projectRoot) !== "node_modules"
+      path.basename(path.dirname(projectRoot)) !== "node_modules"
     ) {
       return "devInstall";
     }
@@ -33,7 +34,7 @@ var lifeCycles = [
       (
         isProd ||
         // installed from another module
-        path.dirname(projectRoot) === "node_modules"
+        path.basename(path.dirname(projectRoot)) === "node_modules"
       )
     ) {
       return "prodInstall";
@@ -45,6 +46,12 @@ var lifeCycles = [
     }
   }
 ];
+
+function debug() {
+  if(__RUNNER_DEBUG__) {
+    console.log.apply(console, arguments);
+  }
+}
 
 function report(msg) {
   console.warn("npm-lifecycle-runner: " + msg);
@@ -89,6 +96,7 @@ function execCmd(cmdDetails, done) {
 }
 
 module.exports = function(projectRoot, cmds) {
+  debug("projectRoot: ", projectRoot);
   if(typeof projectRoot !== "string") {
     return report("projectRoot missing or is not a string");
   }
