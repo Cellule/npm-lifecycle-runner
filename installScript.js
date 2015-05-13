@@ -1,8 +1,6 @@
-process.env.npm_lifecycle_event = "install"
 var lifecycleRunner = require("./index");
 
 lifecycleRunner(__dirname, [
-  "echo running devInstall",
   {
     type: "devInstall",
     cmd: "eslint-myrules cp",
