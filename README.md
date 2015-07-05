@@ -67,3 +67,4 @@ Then add in your `package.json`
     - Every other npm lifecycle commands
   - `onSuccess`: Optional. If it's a string, it will output it if the command succeed. If it's a function, it will be called back with the output of the command.
   - `onError`: Optional. Callback with the error message and the output of the command. If this is missing, it will simply output the `stderror` in the console.
+- `getLifecycle`: function(projectRoot) => lifecycle. Exposed method to get the current lifecycle. Use `require("npm-lifecycle-runner").getLifecycle(process.cwd())`

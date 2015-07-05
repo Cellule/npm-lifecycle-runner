@@ -3,7 +3,7 @@ var path = require("path");
 
 var isProd = process.env.NODE_ENV === "production";
 var lifecycleEvent = process.env.npm_lifecycle_event;
-__RUNNER_DEBUG__ = false;
+global.__RUNNER_DEBUG__ = false;
 
 var defaultLifeCycle = "devInstall";
 
@@ -35,7 +35,7 @@ var lifeCycles = [
 ];
 
 function debug() {
-  if(__RUNNER_DEBUG__) {
+  if(global.__RUNNER_DEBUG__) {
     console.log.apply(console, arguments);
   }
 }
@@ -82,7 +82,17 @@ function execCmd(cmdDetails, done) {
   });
 }
 
-module.exports = function(projectRoot, cmds) {
+function getLifecycle(projectRoot) {
+  for(var i = 0; i < lifeCycles.length; i++) {
+    var lifecycle = lifeCycles[i](projectRoot);
+    if(lifecycle) {
+      return lifecycle;
+    }
+  }
+  return null;
+}
+
+function lifecycleRunner(projectRoot, cmds) {
   debug("projectRoot: ", projectRoot);
   if(typeof projectRoot !== "string") {
     return report("projectRoot missing or is not a string");
@@ -94,11 +104,7 @@ module.exports = function(projectRoot, cmds) {
     cmds = [cmds];
   }
 
-  var type;
-  for(var i = 0; i < lifeCycles.length && !type; i++) {
-    type = lifeCycles[i](projectRoot);
-  }
-
+  var type = getLifecycle(projectRoot);
   if(!type) {
     return report("Unsupported lifecycle event");
   }
@@ -133,4 +139,7 @@ module.exports = function(projectRoot, cmds) {
     nextCallback = cmd.run;
   }
   cmds[0].run();
-};
+}
+
+lifecycleRunner.getLifecycle = getLifecycle;
+module.exports = lifecycleRunner;

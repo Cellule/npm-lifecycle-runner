@@ -1,8 +1,8 @@
 var argv = process.argv;
 if(argv.length > 2 && argv[2] === "--debug") {
-  process.env.npm_lifecycle_event = "install";
+  process.env.npm_lifecycle_event = "install"; // eslint-disable-line camelcase
   var lifecycleRunner = require("./index");
-  __RUNNER_DEBUG__ = true;
+  global.__RUNNER_DEBUG__ = true;
 } else {
   var lifecycleRunner = require("./index");
 }
@@ -15,7 +15,7 @@ lifecycleRunner(__dirname, [
   },
   {
     type: "prodInstall",
-    cmd: "echo check https://github.com/Cellule/npm-lifecycle-runner for details"
+    cmd: "echo see https://github.com/Cellule/npm-lifecycle-runner for details"
   },
 
 ]);

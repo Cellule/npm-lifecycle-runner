@@ -1,6 +1,6 @@
 {
   "name": "npm-lifecycle-runner",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Execute npm lifecycle scripts under better conditions",
   "repository": {
     "type": "git",
