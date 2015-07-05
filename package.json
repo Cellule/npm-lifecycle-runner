@@ -1,28 +1,45 @@
 {
   "name": "npm-lifecycle-runner",
-  "version": "0.0.7",
-  "description": "Execute npm lifecycle scripts under better conditions",
+  "version": "0.1.0",
+  "description": "Execute npm lifecycle scripts under more controlled conditions",
   "repository": {
     "type": "git",
     "url": "https://github.com/Cellule/npm-lifecycle-runner"
-  },
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint-myrules lint index.es6",
-    "install": "node installScript.js",
-    "build": "babel -e 0 -o index.js index.es6",
-    "prepublish": "npm run build"
   },
   "author": {
     "name": "Michael Ferris",
     "url": "https://github.com/Cellule",
     "email": "mike.ferris@hotmail.com"
   },
+  "main": "index.js",
+  "bin": {
+    "npm-lifecycle-runner": "./cli"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint-myrules lint index.es6",
+    "install": "node cli \"eslint-myrules cp\"",
+    "build": "babel -e 0 -o index.js index.es6",
+    "prepublish": "npm run build"
+  },
+  "npm-lifecycle-runner": [
+    {
+      "type": "devInstall",
+      "cmd": "eslint-myrules cp",
+      "onSuccess": "Successfully copied eslint rules"
+    },
+    {
+      "type": "prodInstall",
+      "cmd": "echo see https://github.com/Cellule/npm-lifecycle-runner for details"
+    }
+  ],
   "license": "MIT",
   "devDependencies": {
     "babel": "^5.6.14",
     "cellule-eslint-myrules": "^2.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "json5": "^0.4.0",
+    "yargs": "^3.14.0"
+  }
 }

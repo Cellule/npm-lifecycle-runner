@@ -1,0 +1,79 @@
+#!/usr/bin/env node
+var argv = require("yargs")
+  .boolean(["debug"])
+  .argv;
+var lifecycleRunner = require("./index");
+var fs = require("fs");
+var path = require("path");
+var JSON5 = require("json5");
+
+if(argv.debug) {
+  console.log(argv);
+}
+var cwd = process.cwd();
+var cmds = [];
+// Search for package.json
+var pkg;
+if(argv.config) {
+  pkg = JSON5.parse(
+    fs.readFileSync(argv.config, {encoding: "utf8"})
+  );
+} else {
+  try {
+    // try json5 first
+    pkg = JSON5.parse(
+      fs.readFileSync(path.join(cwd, "package.json5"), {encoding: "utf8"})
+    );
+  } catch(e) {
+    // didn't work, try json
+    try {
+      pkg = JSON5.parse(
+        fs.readFileSync(path.join(cwd, "package.json"), {encoding: "utf8"})
+      );
+    } catch (e) {
+      if(argv.debug) {
+        console.log("No package.json(5) found");
+      }
+      // didn't work, give up on config
+      pkg = null;
+    }
+  }
+}
+
+var pkgCmds = pkg;
+if(pkg && pkg["npm-lifecycle-runner"]) {
+  pkgCmds = pkg["npm-lifecycle-runner"];
+}
+if(pkgCmds && !Array.isArray(pkgCmds)) {
+  pkgCmds = [pkgCmds];
+}
+cmds = cmds.concat(pkgCmds);
+
+
+// Cli options
+cmds = cmds.concat(argv._.map(function(devScript) {
+  return {
+    type: "devInstall",
+    cmd: devScript
+  };
+}));
+
+if(typeof argv.dev === "string") {
+  cmds.push({
+    type: "devInstall",
+    cmd: argv.dev,
+    onSuccess: argv.devSuccess
+  });
+}
+if(typeof argv.prod === "string") {
+  cmds.push({
+    type: "prodInstall",
+    cmd: argv.prod,
+    onSuccess: argv.prodSuccess
+  });
+}
+if(argv.debug) {
+  console.dir(cmds);
+}
+global.__RUNNER_DEBUG__ = argv.debug;
+lifecycleRunner(process.cwd(), cmds);
