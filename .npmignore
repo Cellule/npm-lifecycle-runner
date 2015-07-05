@@ -1,0 +1,5 @@
+/node_modules
+npm-lifecycle-runner.*
+installScript.js
+.eslintrc
+index.es6

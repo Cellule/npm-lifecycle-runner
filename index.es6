@@ -1,5 +1,3 @@
-"use strict";
-
 var exec = require("child_process").exec;
 var path = require("path");
 
@@ -9,22 +7,35 @@ global.__RUNNER_DEBUG__ = false;
 
 var defaultLifeCycle = "devInstall";
 
-var lifeCycles = [function isDevInstall(projectRoot) {
-  if (!isProd && lifecycleEvent === "install" && path.basename(path.dirname(projectRoot)) !== "node_modules") {
-    return "devInstall";
+var lifeCycles = [
+  function isDevInstall(projectRoot) {
+    if(
+      !isProd &&
+      lifecycleEvent === "install" &&
+      path.basename(path.dirname(projectRoot)) !== "node_modules"
+    ) {
+      return "devInstall";
+    }
+  },
+  function isProdInstall(projectRoot) {
+    if(
+      lifecycleEvent === "install" &&
+      (
+        isProd ||
+        // installed from another module
+        path.basename(path.dirname(projectRoot)) === "node_modules"
+      )
+    ) {
+      return "prodInstall";
+    }
+  },
+  function otherLifecycles() {
+    return lifecycleEvent;
   }
-}, function isProdInstall(projectRoot) {
-  if (lifecycleEvent === "install" && (isProd ||
-  // installed from another module
-  path.basename(path.dirname(projectRoot)) === "node_modules")) {
-    return "prodInstall";
-  }
-}, function otherLifecycles() {
-  return lifecycleEvent;
-}];
+];
 
 function debug() {
-  if (global.__RUNNER_DEBUG__) {
+  if(global.__RUNNER_DEBUG__) {
     console.log.apply(console, arguments);
   }
 }
@@ -36,21 +47,21 @@ function report(msg) {
 function execCmd(cmdDetails, done) {
   var cmd;
   var opts = cmdDetails.opts || process;
-  if (typeof cmdDetails === "string") {
+  if(typeof cmdDetails === "string") {
     cmd = cmdDetails;
     opts = process;
   } else {
     cmd = cmdDetails.cmd;
   }
-  if (!cmd) {
+  if(!cmd) {
     report("Empty cmd");
     return done();
   }
 
   // console.log("> " + cmd);
   exec(cmd, opts, function (err, stdout, stderror) {
-    if (err) {
-      if (cmdDetails.onError) {
+    if(err) {
+      if(cmdDetails.onError) {
         cmdDetails.onError(err, stdout, stderror);
         return done();
       }
@@ -58,8 +69,8 @@ function execCmd(cmdDetails, done) {
       return done();
     }
 
-    if (cmdDetails.onSuccess) {
-      if (typeof cmdDetails.onSuccess === "string") {
+    if(cmdDetails.onSuccess) {
+      if(typeof cmdDetails.onSuccess === "string") {
         console.log(cmdDetails.onSuccess);
       } else {
         cmdDetails.onSuccess(stdout, stderror);
@@ -72,9 +83,9 @@ function execCmd(cmdDetails, done) {
 }
 
 function getLifecycle(projectRoot) {
-  for (var i = 0; i < lifeCycles.length; i++) {
+  for(var i = 0; i < lifeCycles.length; i++) {
     var lifecycle = lifeCycles[i](projectRoot);
-    if (lifecycle) {
+    if(lifecycle) {
       return lifecycle;
     }
   }
@@ -83,24 +94,24 @@ function getLifecycle(projectRoot) {
 
 function lifecycleRunner(projectRoot, cmds) {
   debug("projectRoot: ", projectRoot);
-  if (typeof projectRoot !== "string") {
+  if(typeof projectRoot !== "string") {
     return report("projectRoot missing or is not a string");
   }
-  if (!cmds) {
+  if(!cmds) {
     return report("commands missing");
   }
-  if (typeof cmds !== "object" || !Array.isArray(cmds)) {
+  if(typeof cmds !== "object" || !Array.isArray(cmds)) {
     cmds = [cmds];
   }
 
   var type = getLifecycle(projectRoot);
-  if (!type) {
+  if(!type) {
     return report("Unsupported lifecycle event");
   }
 
-  cmds = cmds.map(function (cmd) {
+  cmds = cmds.map(function(cmd) {
     var result = cmd || {};
-    if (typeof cmd === "string") {
+    if(typeof cmd === "string") {
       result = {
         type: defaultLifeCycle,
         cmd: cmd
@@ -111,9 +122,9 @@ function lifecycleRunner(projectRoot, cmds) {
   });
 
   function run(cmdDetails, next) {
-    return function () {
-      process.nextTick(function () {
-        if (type === cmdDetails.type) {
+    return function() {
+      process.nextTick(function() {
+        if(type === cmdDetails.type) {
           return execCmd(cmdDetails, next);
         }
         next();
@@ -121,9 +132,9 @@ function lifecycleRunner(projectRoot, cmds) {
     };
   }
 
-  var nextCallback = function nextCallback() {};
-  for (var i = cmds.length - 1; i >= 0; i--) {
-    var cmd = cmds[i];
+  var nextCallback = function() { };
+  for(var i = cmds.length - 1; i >= 0; i--) {
+    const cmd = cmds[i];
     cmd.run = run(cmd, nextCallback);
     nextCallback = cmd.run;
   }
