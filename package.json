@@ -1,6 +1,6 @@
 {
   "name": "npm-lifecycle-runner",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Execute npm lifecycle scripts under more controlled conditions",
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint-myrules lint index.es6",
-    "install": "node cli \"eslint-myrules cp\"",
+    "install": "node cli",
     "build": "babel -e 0 -o index.js index.es6",
     "prepublish": "npm run build"
   },

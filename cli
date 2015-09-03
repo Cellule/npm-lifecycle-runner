@@ -47,8 +47,9 @@ if(pkg && pkg["npm-lifecycle-runner"]) {
 if(pkgCmds && !Array.isArray(pkgCmds)) {
   pkgCmds = [pkgCmds];
 }
-cmds = cmds.concat(pkgCmds);
-
+if(pkgCmds) {
+  cmds = cmds.concat(pkgCmds);
+}
 
 // Cli options
 cmds = cmds.concat(argv._.map(function(devScript) {
